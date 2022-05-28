@@ -73,12 +73,12 @@ body {
 .Hidden{
   display: none;
 }
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     body {
     font-size: 14px;
     } 
   }
-@media (max-width: 900px){
+@media (max-width: 700px){
   body header nav {
       justify-content: end;
       width: 50%;
@@ -92,7 +92,7 @@ div#intestazione{
   width: 80%;
   padding-left: 90px;
   }
-@media(max-width:500px){
+@media(max-width:700px){
     div#intestazione{
     padding-left: 30px;
     }
@@ -149,7 +149,7 @@ footer {
   margin-top: 0;
   text-decoration: underline;
   }
-  @media (max-width: 500px) {
+  @media (max-width: 700px) {
     .Box2 {
       font-size: 1.3em;
       }
@@ -179,7 +179,7 @@ footer {
   margin-left: 10px;
   }
 
-@media (max-width: 500px) {
+@media (max-width: 750px) {
     .contenuto div.Box1{
     width: 100%;
     padding: 5px;
@@ -213,7 +213,7 @@ header {
   justify-content: end;
   }
   
-@media (max-width: 500px) {
+@media (max-width: 700px) {
   header {
     height: 300px;
     line-height: 1.2;
@@ -246,7 +246,7 @@ header h1 a {
   }
   
     
-@media (max-width: 500px) {
+@media (max-width: 700px) {
   header h1 {
     font-size: 2em;
     letter-spacing: 4px;
@@ -279,12 +279,13 @@ header nav {
   margin: 5px 0;
   }
   
-@media (max-width: 500px) {
+@media (max-width: 700px) {
   .links {
     display: none;
     }
   #menu {
     display: block;
+    width: 40%;
     }
   }
   
@@ -319,7 +320,7 @@ section.Item{
     box-shadow: 5px 5px 5px 10px rgba(255, 255, 255, 0.445);
 }  
   
-@media (max-width: 500px) {
+@media (max-width: 700px) {
   section {
     margin: 40px 10px;
     }

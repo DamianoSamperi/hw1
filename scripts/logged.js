@@ -62,7 +62,6 @@ function OnJson(json){
     nuova_ricetta.classList.remove("Hidden");
     const sezione_preferiti=document.querySelector(".mostra_preferiti");
     sezione_preferiti.classList.add("Hidden");
-
     for(let i=0;i<2;i++){
         if(json.count>=2){
        const hit=json.hits[i];
@@ -100,7 +99,10 @@ function OnJson(json){
        section.appendChild(contenuto);
        section.classList.add("Item");
        nuova_ricetta.appendChild(section);
-       fetch('VerificaPreferito.php?preferito='+encodeURIComponent(i)+'&titolo='+encodeURIComponent(titolo)).then(OnResponse).then(Verifica);
+       id_ricetta=hit._links.self.href;
+       id_ricetta=id_ricetta.slice(38,70);
+       preferito.classList.add(id_ricetta);
+       fetch('VerificaPreferito.php?preferito='+encodeURIComponent(i)+'&id='+encodeURIComponent(id_ricetta)).then(OnResponse).then(Verifica);
        preferito.addEventListener('click',function (json){ return Preferito(preferito); });
 
        butt=document.querySelector("#Ritorna");
@@ -116,16 +118,14 @@ function OnJson(json){
     
 }
 function OnJson_carica(json){
-   if(json){
-   const nuova_ricetta=document.querySelector(".nuova_vista");
+    const nuova_ricetta=document.querySelector(".nuova_vista");
+    if(json){
     nuova_ricetta.innerHTML='';
     for(let i=0;i<json.length;i++){
         js=JSON.parse(json[i]);
-        const hit=js.hits[0];
-        const titolo=hit.recipe.label;
-       const ingredienti=hit.recipe.ingredients;
-       const img=hit.recipe.images.REGULAR.url;
-
+       const titolo=js.recipe.label;
+       const ingredienti=js.recipe.ingredients;
+       const img=js.recipe.images.REGULAR.url;
        const contenuto=document.createElement("div");
        contenuto.classList.add("contenuto");
        
@@ -156,17 +156,23 @@ function OnJson_carica(json){
        section.classList.add("Item");
        section.appendChild(contenuto);
        nuova_ricetta.appendChild(section);
-       fetch('VerificaPreferito.php?preferito='+encodeURIComponent(i)+'&titolo='+encodeURIComponent(titolo)).then(OnResponse).then(Verifica);
+       id_ricetta=js._links.self.href;
+       id_ricetta=id_ricetta.slice(38,70);
+       preferito.classList.add(id_ricetta);
+       fetch('VerificaPreferito.php?preferito='+encodeURIComponent(i)+'&id='+encodeURIComponent(id_ricetta)).then(OnResponse).then(Verifica);
 
        preferito.addEventListener('click',function (json){ return Preferito_e_ricarica(preferito); });
-       fetch("Carica_creati.php?q=true").then(OnResponse).then(Carica_creati);
-    }}
+    }}else{
+    nuova_ricetta.innerHTML='';
+    nuova_ricetta.textContent="Non hai preferiti salvati"
+    }
+    fetch("Carica_creati.php?q=true").then(OnResponse).then(Carica_creati);
 }
 function Carica_creati(json){
-    if(json){
     const nuova_ricetta=document.querySelector(".creati");
     const creati=document.querySelector("#inserimento");
     creati.innerHTML='';
+    if(json){
     for(let i=0;i<json.length;i++){
        const titolo=json[i].label;
        const preparazione=json[i].box;
@@ -193,13 +199,20 @@ function Carica_creati(json){
        Box1.appendChild(immagine);
        contenuto.appendChild(Box1);
        contenuto.appendChild(Box2);
+       const cestino=document.createElement('img');
+       cestino.src="cestino.png";
        const section=document.createElement("section");
        section.classList.add("Item");
        section.appendChild(contenuto);
+       section.appendChild(cestino);
        creati.appendChild(section);
        nuova_ricetta.appendChild(creati);
+
+       cestino.addEventListener('click',function (json){ return Cancella(cestino); });
        
-    }}
+    }}else{
+        creati.textContent='Ancora nessun elemento creato';
+    }
 }
 function Verifica(json){
     const preferito= document.getElementById(json['preferito']);
@@ -211,15 +224,17 @@ function Verifica(json){
         preferito.src="not_favorite.png";
     }
 }
-
+function Cancella(cestino){
+    id=cestino.parentNode.querySelector(".Box1 div").innerHTML;
+    fetch('Cancella.php?id='+encodeURIComponent(id)).then(Ricarica);
+}
 function Preferito(preferito){
-    title=preferito.parentNode.querySelector('.title').textContent;
-    fetch('ModificaPreferito.php?preferito='+encodeURIComponent(preferito.id)+'&titolo='+encodeURIComponent(title)).then(OnResponse).then(VerificaPreferito);
+    id=preferito.className;
+    fetch('ModificaPreferito.php?preferito='+encodeURIComponent(preferito.id)+'&id='+encodeURIComponent(id)).then(OnResponse).then(VerificaPreferito);
 }
 function Preferito_e_ricarica(preferito){
-    title=preferito.parentNode.querySelector('.title').textContent;
-    fetch('ModificaPreferito.php?preferito='+encodeURIComponent(preferito.id)+'&titolo='+encodeURIComponent(title)).then(OnResponse).then(VerificaPreferito);
-    Ricarica();
+    id=preferito.className;
+    fetch('ModificaPreferito.php?preferito='+encodeURIComponent(preferito.id)+'&id='+encodeURIComponent(id)).then(OnResponse).then(VerificaPreferito).then(Ricarica);
 }
 function VerificaPreferito(json){
     const preferito= document.getElementById(json['preferito']);
@@ -257,13 +272,19 @@ function OnJson_carica_utente(json){
     const nuova_ricetta=document.querySelector(".nuova_vista");
     nuova_ricetta.classList.remove('Hidden');
     nuova_ricetta.innerHTML='';
+    const titolo_ricetta=document.querySelector("#titolo");
+    if(!json[1]){
+        titolo_ricetta.textContent="Utente non trovato ";
+        const sezione_spotify=document.querySelector(".Spotify");
+        sezione_spotify.classList.add("Hidden");
+    }else{
 
     const sezione_preferiti=document.querySelector(".mostra_preferiti");
     sezione_preferiti.classList.add("Hidden");
-
-    const titolo_ricetta=document.querySelector("#titolo");
+    
     const input=document.querySelector("#ricetta");
     titolo_ricetta.textContent="Pagina personale utente: "+ input.value;
+    if(json[0]){
     for(let i=0;i<json.length;i++){
        js=JSON.parse(json[i]);
        const hit=js.hits[0];
@@ -304,6 +325,8 @@ function OnJson_carica_utente(json){
 
     preferito.addEventListener('click',function (json){ return Preferito(preferito); });
        
+    }}else{
+        nuova_ricetta.textContent="L'utente non ha preferiti salvati"
     }
     fetch("Carica_creati.php?q="+encodeURIComponent(input.value)).then(OnResponse).then(Carica_creati);
     const mostra_creati=document.querySelector(".mostra_creati");
@@ -312,6 +335,7 @@ function OnJson_carica_utente(json){
     const add_creati=document.querySelector(".creati img");
     sezione_creati.classList.remove("Hidden");  
     add_creati.classList.add("Hidden");
+}
 }
 function JsonMostraAlbum(json){
     const nuova_ricetta=document.querySelector(".Spotify");

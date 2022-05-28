@@ -1,7 +1,7 @@
 <?php
 session_start();
 $conn=mysqli_connect('localhost','root','','login');
-$label=mysqli_real_escape_string($conn,$_GET['titolo']);
+$label=mysqli_real_escape_string($conn,$_GET['id']);
 $username=mysqli_real_escape_string($conn,$_SESSION['username']);
 $user=mysqli_real_escape_string($conn,$_SESSION['user_id']);
 $query = "SELECT label FROM labels WHERE user_id ='$user' && label ='$label'";

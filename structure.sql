@@ -20,7 +20,7 @@ CREATE TABLE creations (
     creation_id integer primary key auto_increment,
     user_id integer not null,
     username varchar(16) not null,
-    label varchar(255) not null,
+    label varchar(255) not null unique,
     preparazione  varchar(255) not null,
     img varchar(255) not null,
     foreign key(user_id) references utente(id) on delete cascade on update cascade

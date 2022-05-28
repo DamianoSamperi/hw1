@@ -11,10 +11,9 @@ $res= mysqli_query($conn,$query);
 if(mysqli_num_rows($res)>0){
   $query= "SELECT label FROM labels WHERE username='$username' LIMIT 3";
   $res1=mysqli_query($conn,$query);
-  if($num=mysqli_num_rows($res1)>0){
+  if(mysqli_num_rows($res1)>0){
       foreach ($res1 as $ind => $value) {
-        $dati = array("q" => $value['label'] , "app_id"=> $api_id_recipes,"app_key" => $api_key);
-        $dati = http_build_query($dati);
+        $api_recipes_url=$api_recipes.$value['label'].'?'."type=public&app_id=".$api_id_recipes."&app_key=". $api_key;
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL,$api_recipes.$dati);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -24,9 +23,9 @@ if(mysqli_num_rows($res)>0){
         $array[$ind]=[$result];
       }
     echo json_encode($array);
-    exit;
-  } 
+  }else
+  echo json_encode($error=['0'=>false,'1'=>true]);
 }else
-echo json_encode(false);
+echo json_encode($error=['0'=>true,'1'=>false]);
 mysqli_close($conn);
 ?>
