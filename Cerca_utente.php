@@ -1,5 +1,5 @@
 <?php
-$api_recipes="https://api.edamam.com/api/recipes/v2?type=public&";
+$api_recipes="https://api.edamam.com/api/recipes/v2/";
 $api_id_recipes="d683117b";
 $api_key="2efd83bc8dd404aac01c8a2b391867e5";
 session_start();
@@ -15,7 +15,7 @@ if(mysqli_num_rows($res)>0){
       foreach ($res1 as $ind => $value) {
         $api_recipes_url=$api_recipes.$value['label'].'?'."type=public&app_id=".$api_id_recipes."&app_key=". $api_key;
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL,$api_recipes.$dati);
+        curl_setopt($curl, CURLOPT_URL,$api_recipes_url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $result = curl_exec($curl);
         curl_close($curl);

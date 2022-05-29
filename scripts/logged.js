@@ -56,14 +56,14 @@ function OnResponse(response){
 }
 function OnJson(json){
     const titolo_ricetta=document.querySelector("#titolo");
-    titolo_ricetta.textContent="Risultati Ricerca";
     const nuova_ricetta=document.querySelector(".nuova_vista");
+    const sezione_preferiti=document.querySelector(".mostra_preferiti");
+    if(json.count!=0){
+    titolo_ricetta.textContent="Risultati Ricerca";
     nuova_ricetta.innerHTML='';
     nuova_ricetta.classList.remove("Hidden");
-    const sezione_preferiti=document.querySelector(".mostra_preferiti");
     sezione_preferiti.classList.add("Hidden");
     for(let i=0;i<2;i++){
-        if(json.count>=2){
        const hit=json.hits[i];
        const titolo=hit.recipe.label;
        const ingredienti=hit.recipe.ingredients;
@@ -110,6 +110,9 @@ function OnJson(json){
        butt.addEventListener("click",torna);
        
     }
+    }else{
+        nuova_ricetta.innerHTML='';
+        nuova_ricetta.textContent="Nessuna ricetta trovata con quel nome, prova con titoli più generali es.'torta' o 'nutella'";
     }
     const mostra_creati=document.querySelector(".mostra_creati");
     mostra_creati.classList.add("Hidden");
@@ -164,7 +167,7 @@ function OnJson_carica(json){
        preferito.addEventListener('click',function (json){ return Preferito_e_ricarica(preferito); });
     }}else{
     nuova_ricetta.innerHTML='';
-    nuova_ricetta.textContent="Non hai preferiti salvati"
+    nuova_ricetta.textContent="Non hai preferiti salvati";
     }
     fetch("Carica_creati.php?q=true").then(OnResponse).then(Carica_creati);
 }
@@ -287,10 +290,9 @@ function OnJson_carica_utente(json){
     if(json[0]){
     for(let i=0;i<json.length;i++){
        js=JSON.parse(json[i]);
-       const hit=js.hits[0];
-       const titolo=hit.recipe.label;
-       const ingredienti=hit.recipe.ingredients;
-       const img=hit.recipe.images.REGULAR.url;
+       const titolo=js.recipe.label;
+       const ingredienti=js.recipe.ingredients;
+       const img=js.recipe.images.REGULAR.url;
 
        const contenuto=document.createElement("div");
        contenuto.classList.add("contenuto");
@@ -321,7 +323,10 @@ function OnJson_carica_utente(json){
     section.classList.add("Item");
     section.appendChild(contenuto);
     nuova_ricetta.appendChild(section);
-    fetch('VerificaPreferito.php?preferito='+encodeURIComponent(i)+'&titolo='+encodeURIComponent(titolo)).then(OnResponse).then(Verifica);
+    id_ricetta=js._links.self.href;
+    id_ricetta=id_ricetta.slice(38,70);
+    preferito.classList.add(id_ricetta);
+    fetch('VerificaPreferito.php?preferito='+encodeURIComponent(i)+'&id='+encodeURIComponent(id_ricetta)).then(OnResponse).then(Verifica);
 
     preferito.addEventListener('click',function (json){ return Preferito(preferito); });
        
